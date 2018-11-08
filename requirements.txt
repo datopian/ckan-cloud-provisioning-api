@@ -1,0 +1,6 @@
+flask-cors
+flask-session
+dhq-auth
+fabric
+PyYAML
+jinja2
