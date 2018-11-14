@@ -16,15 +16,15 @@ services:
   - docker
 
 install:
-  - make install
+#   - make install
   - bash .travis.sh install
 
 script:
-  - make test
+#   - make test
   - bash .travis.sh script
 
-after_success:
-  - coveralls
+#after_success:
+#  - coveralls
 
 deploy:
   skip_cleanup: true
