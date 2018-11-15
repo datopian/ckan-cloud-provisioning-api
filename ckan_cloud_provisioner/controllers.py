@@ -8,7 +8,7 @@ import yaml
 from .models import create_or_edit, delete, query, User, Instance
 from .server_connection import get_connection, execute_remote
 from .instance_status_service import cis
-from .values import convert_body
+from .values import convert_body, kinds
 
 
 def create_or_edit_instance(id, body):
@@ -100,3 +100,7 @@ def query_users():
     ret = query(User)
     return ret
 
+def instance_kinds():
+    return dict(
+        kinds=kinds()
+    )

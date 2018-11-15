@@ -21,6 +21,16 @@ mandatory_fields = [
     'kind', 'id', 'siteTitle'
 ]
 
+
+# Get different kind options
+def kinds():
+    return list(
+        dict(id=k, title=v.get('provisioningKindTitle', k))
+        for k, v
+        in all_kinds.items()
+    )
+
+
 # Values check and convert
 def convert_body(body):
     for field in mandatory_fields:

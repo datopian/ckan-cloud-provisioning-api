@@ -47,6 +47,10 @@ def make_blueprint():  # noqa
         return controllers.query_instances()
 
     @check_permission(Permissions.Maintainer)
+    def instance_kinds_():
+        return controllers.instance_kinds()
+
+    @check_permission(Permissions.Maintainer)
     def edit_instance_():
         body = request.json
         id = body['id']
@@ -77,6 +81,8 @@ def make_blueprint():  # noqa
         'instance', 'edit_instance', edit_instance_, methods=['POST'])
     blueprint.add_url_rule(
         'instance/<id>', 'delete_instance', delete_instance_, methods=['DELETE'])
+    blueprint.add_url_rule(
+        'instance/kinds', 'instance_kinds', instance_kinds_, methods=['GET'])
 
     blueprint.add_url_rule(
         'users', 'query_users', query_users_, methods=['GET'])

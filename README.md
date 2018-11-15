@@ -5,22 +5,23 @@ API for provisioning CKAN instances in the ckan-cloud platform.
 **API**:
 - `GET /instances`
   returns a list of all running instances, their parameters and status.
-  ```json
+  ```yaml
   {
       "results": [
           {"id": "instance-id", "params": "instance-params", "active": true/false, "ckanPhase": "Running/..." }
+          # ...
       ]
   }
   ```
 - `POST /instance`
   Create/edit an instance. Expects JSON body of the form:
-  ```json
+  ```yaml
   {
       "id": "instance-id",
       "kind": "instance-kind",
       "param1": "value1",
       "param2": "value2",
-      "etc": "..."
+      # ...
   }
   ```
   `id` is the unique identification of this new instance.
@@ -28,6 +29,17 @@ API for provisioning CKAN instances in the ckan-cloud platform.
   All other params are extra configuration (see later for usage)
 - `DELETE /instance/id`
   Deletes instances by id.
+
+- `GET /instance/kinds`
+  returns a list of all possible instance kinds currently available in the system.
+  ```yaml
+  {
+      "kinds": [
+          {"id": "kind-id", "title": "kind-title"}, 
+          # ... 
+      ]
+  }
+  ```
 
 - `GET /users`
   returns a list of all users and their roles.
