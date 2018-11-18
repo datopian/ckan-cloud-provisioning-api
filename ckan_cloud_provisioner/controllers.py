@@ -1,3 +1,4 @@
+import sys
 from io import StringIO
 import threading
 import pathlib
@@ -35,19 +36,25 @@ def create_or_edit_instance(id, body):
     # Put file and create instance
     def executor(id_, active_, values_file_):
         def func():
-            conn = get_connection()
-            conn.put(values_file_, f'/etc/ckan-cloud/{id_}_values.yaml')
-            if active_:
-                res = conn.run(f'/etc/ckan-cloud/cca_operator.sh ./update-instance.sh "{id_}"')
-            else:
-                res = conn.run(f'/etc/ckan-cloud/cca_operator.sh ./create-instance.sh "{id_}"')
-            return dict(
-                success=res.ok,
-                errors=res.stderr
-            )
+            try:
+                conn = get_connection()
+                res = conn.put(values_file_, f'/etc/ckan-cloud/{id_}_values.yaml')
+                if active_:
+                    res = conn.run(f'cd /cca-operator && ./cca-operator.sh ./update-instance.sh "{id_}"')
+                else:
+                    res = conn.run(f'cd /cca-operator && ./cca-operator.sh ./create-instance.sh "{id_}"')
+                return dict(
+                    success=res.ok,
+                    errors=res.stderr
+                )
+            except Exception as e:
+                print(e, file=sys.stderr)
+                return dict(
+                    success=False,
+                    errors=str(e)
+                )
         return func
     
-    print(values)
     ret.update(execute_remote(executor(id, active, values_file)))
     return ret
 
@@ -59,7 +66,7 @@ def delete_instance(id):
     def executor(id_):
         def func():
             conn = get_connection()
-            res = conn.run(f'/etc/ckan-cloud/cca_operator.sh ./delete-instance.sh "{id_}"')
+            res = conn.run(f'cd /cca-operator && ./cca-operator.sh ./delete-instance.sh "{id_}"')
             return dict(
                 success=res.ok,
                 errors=res.stderr

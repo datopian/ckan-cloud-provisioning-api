@@ -15,7 +15,7 @@ class CachedInstanceStatus(threading.Thread):
     def run(self):
         while True:
             try:
-                res = get_connection().run(f'/etc/ckan-cloud/cca_operator.sh ./list-instances.sh', hide='both')
+                res = get_connection().run(f'cd /cca-operator && ./cca-operator.sh ./list-instances.sh', hide='both')
                 with self.lock:
                     self.status = yaml.load(res.stdout)
                 print(self.status)

@@ -1,5 +1,6 @@
 from io import StringIO
 import os
+import sys
 
 import fabric
 from paramiko import RSAKey
@@ -29,3 +30,18 @@ def execute_remote(func):
             success=False,
             errors=str(e)
         )
+
+
+def ping():
+    def func():
+        import logging
+        try:
+            ping = get_connection().run('echo ping', hide='both')
+            logging.error('PING RESULT %r', ping.stdout)
+            logging.error('PING ERRORS %r', ping.stderr)
+        except Exception as e:
+            logging.error('PING ERROR %r', e)
+
+    execute_remote(func)
+
+ping()

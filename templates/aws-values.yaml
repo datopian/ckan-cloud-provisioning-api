@@ -1,11 +1,11 @@
 # Domain for the load balancer
-domain: cloud-demo5.ckan.io
+# domain: cloud-demo5.ckan.io
 
 # automatic SSL using Let's encrypt for subdomains of ckan.io
 withSansSSL: true
 
 # if set, create-instance script will register this subdomain under ckan.io
-registerSubdomain: "cloud-demo5"
+# registerSubdomain: "cloud-demo5"
 
 # Main URL to the CKAN web-app and API
 siteUrl: http://localhost:8080
@@ -72,12 +72,12 @@ solrPersistentDiskSizeGB: 10
 
 # Secrets
 # these secrets are created by cca-operator, if you need to recreate the secrets, change the secret name
-ckanSecretName: ckan-secrets
-envVarsSecretName: ckan-env-vars
+# ckanSecretName: ckan-secrets
+# envVarsSecretName: ckan-env-vars
 
 # docker images are built by Jenkins on cloud-management.ckan.io, hosted on private gitlab Docker registry
-ckanOperatorImage: registry.gitlab.com/datopian/datagov-ckan-multi:cca-operator-e4111a5ac6c20a69e548b88403733bd3cf16c270
-ckanImage: registry.gitlab.com/datopian/datagov-ckan-multi:ckan-e4111a5ac6c20a69e548b88403733bd3cf16c270
-dbImage: registry.gitlab.com/datopian/datagov-ckan-multi:db-e4111a5ac6c20a69e548b88403733bd3cf16c270
-solrImage: registry.gitlab.com/datopian/datagov-ckan-multi:solr-e4111a5ac6c20a69e548b88403733bd3cf16c270
-nginxImage: registry.gitlab.com/datopian/datagov-ckan-multi:nginx-e4111a5ac6c20a69e548b88403733bd3cf16c270
+# ckanOperatorImage: registry.gitlab.com/datopian/datagov-ckan-multi:cca-operator-e4111a5ac6c20a69e548b88403733bd3cf16c270
+# ckanImage: registry.gitlab.com/datopian/datagov-ckan-multi:ckan-e4111a5ac6c20a69e548b88403733bd3cf16c270
+# dbImage: registry.gitlab.com/datopian/datagov-ckan-multi:db-e4111a5ac6c20a69e548b88403733bd3cf16c270
+# solrImage: registry.gitlab.com/datopian/datagov-ckan-multi:solr-e4111a5ac6c20a69e548b88403733bd3cf16c270
+# nginxImage: registry.gitlab.com/datopian/datagov-ckan-multi:nginx-e4111a5ac6c20a69e548b88403733bd3cf16c270
