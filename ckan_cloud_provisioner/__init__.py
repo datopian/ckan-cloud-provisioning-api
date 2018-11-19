@@ -5,7 +5,6 @@ from .models import User, query_one
 
 
 def get_permissions(service, userid):
-    print('get_permissions', service, userid)
     if service != 'ckan-cloud-provisioner': return {}
     
     user = get_user(userid)
@@ -17,5 +16,4 @@ def get_permissions(service, userid):
     value = query_one(User, email)
     if value is None: return {}
 
-    print('got perm', value)
     return value

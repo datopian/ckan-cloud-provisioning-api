@@ -8,7 +8,7 @@ API for provisioning CKAN instances in the ckan-cloud platform.
   ```yaml
   {
       "results": [
-          {"id": "instance-id", "params": "instance-params", "active": true/false, "ckanPhase": "Running/..." }
+          {"id": "instance-id", "params": {"instance-": "-params"}, "active": true/false, "status": "Running/..." }
           # ...
       ]
   }
@@ -19,9 +19,13 @@ API for provisioning CKAN instances in the ckan-cloud platform.
   {
       "id": "instance-id",
       "kind": "instance-kind",
-      "param1": "value1",
-      "param2": "value2",
-      # ...
+      "params": {
+        "siteTitle": "mandatory site title",
+        "ckanAdminEmail": "mandatory ckan admin email",
+        "param1": "value1",
+        "param2": "value2",
+        # ...
+      }
   }
   ```
   `id` is the unique identification of this new instance.
@@ -38,6 +42,13 @@ API for provisioning CKAN instances in the ckan-cloud platform.
           {"id": "kind-id", "title": "kind-title"}, 
           # ... 
       ]
+  }
+  ```
+- `GET /instance/conninfo/id`
+  returns information for connecting to an instance (atm only the admin password)
+  ```yaml
+  {
+      "password": "<secret>"
   }
   ```
 
@@ -90,7 +101,7 @@ All API calls should have a `jwt` query parameter with an authorization token fo
 
 Create/Edit instance configuration is creating by overlaying a few configurations one on top of another.
 
-- The base configuration is always `templates/aws-values.yaml`
+- The base configuration is always `templates/base.yaml`. It should point to `aws-values.yaml` or `minikube-values.yaml`.
 - On top of that, a configuration is selected based on the instance `kind` parameter, found in `templates/kind-{kind}.yaml`
 - Then, a configuration which is generated using `templates/templated.yaml`.
   This file is a configuration template, which uses values from the provided request body to render a values yaml file.

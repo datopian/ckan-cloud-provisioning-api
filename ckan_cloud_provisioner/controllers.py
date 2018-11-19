@@ -6,10 +6,19 @@ import pathlib
 from fabric import Connection
 import yaml
 
+from auth.models import get_user
+
 from .models import create_or_edit, delete, query, User, Instance
-from .server_connection import get_connection, execute_remote
-from .instance_status_service import cis
+from .server_connection import get_connection, execute_remote, cca_cmd
+from .instance_status_service import CachedInstanceStatus
 from .values import convert_body, kinds
+
+cis = None
+
+
+def init():
+    global cis
+    cis = CachedInstanceStatus.start_service()
 
 
 def create_or_edit_instance(id, body):
@@ -40,9 +49,9 @@ def create_or_edit_instance(id, body):
                 conn = get_connection()
                 res = conn.put(values_file_, f'/etc/ckan-cloud/{id_}_values.yaml')
                 if active_:
-                    res = conn.run(f'cd /cca-operator && ./cca-operator.sh ./update-instance.sh "{id_}"')
+                    res = cca_cmd(f'./update-instance.sh "{id_}"')
                 else:
-                    res = conn.run(f'cd /cca-operator && ./cca-operator.sh ./create-instance.sh "{id_}"')
+                    res = cca_cmd(f'./create-instance.sh "{id_}"')
                 return dict(
                     success=res.ok,
                     errors=res.stderr
@@ -65,8 +74,7 @@ def delete_instance(id):
     # Put file and create instance
     def executor(id_):
         def func():
-            conn = get_connection()
-            res = conn.run(f'cd /cca-operator && ./cca-operator.sh ./delete-instance.sh "{id_}"')
+            res = cca_cmd(f'./delete-instance.sh "{id_}"')
             return dict(
                 success=res.ok,
                 errors=res.stderr
@@ -82,15 +90,21 @@ def query_instances():
     query_results = query(Instance)
 
     status = cis.instance_status()
-    instances = [
-        dict(
-            id=ret['key'],
-            params=ret['value'],
-            **status.get(ret['key'], {})
+    instances = []
+    for ret in query_results['results']:
+        params = {}
+        params.update(status.get(ret['key'], {}))
+        params.update(ret['value'])
+        instances.append(
+            dict(
+                id=ret['key'],
+                kind=params.get('kind'),
+                params=params,
+                active=params.get('active'),
+                status=params.get('ckanPhase'),
+            )
         )
-        for ret in query_results['results']
-    ]
-    
+
     return dict(
         instances=instances
     )
@@ -103,11 +117,41 @@ def delete_user(id):
     ret = delete(User, id)
     return ret
 
-def query_users():
+def query_users(userid):
+    user = get_user(userid)
+    if user is None: return {}
+            
+    email = user.get('email')
+    if email is None: return {}
+
     ret = query(User)
+
+    for user in ret['results']:
+        user['self'] = user['key'] == email
+
     return ret
 
 def instance_kinds():
     return dict(
         kinds=kinds()
     )
+
+def instance_connection_info(id):
+    ret = {}
+    # Put file and create instance
+    def executor(id_):
+        def func():
+            res = cca_cmd(f'./instance-connection-info.sh "{id_}"')
+            passwords = [
+                line.strip().split(':')[-1].strip()
+                for line in res.stdout.split('\n')
+                if 'admin password' in line
+            ]
+            if len(passwords) > 0:
+                return dict(password=passwords[0])
+            else:
+                return {}
+        return func
+
+    ret.update(execute_remote(executor(id)))
+    return ret        

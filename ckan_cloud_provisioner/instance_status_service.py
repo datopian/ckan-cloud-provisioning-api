@@ -15,9 +15,14 @@ class CachedInstanceStatus(threading.Thread):
     def run(self):
         while True:
             try:
-                res = get_connection().run(f'cd /cca-operator && ./cca-operator.sh ./list-instances.sh', hide='both')
+                res = get_connection().run(f'./cca-operator.sh ./list-instances.sh', hide='both')
+                status = yaml.load(res.stdout.split('------')[0])
+                for k, v in status.items():
+                    res = get_connection().run(f'./cca-operator.sh ./get-instance-values.sh "{k}"', hide='both')
+                    instance_values = yaml.load(res.stdout)
+                    v.update(instance_values)
                 with self.lock:
-                    self.status = yaml.load(res.stdout)
+                    self.status = status
                 print(self.status)
             except Exception as e:
                 print(e)
@@ -29,6 +34,8 @@ class CachedInstanceStatus(threading.Thread):
             ret = self.status
         return ret
 
-
-cis = CachedInstanceStatus()
-cis.start()
+    @staticmethod
+    def start_service():
+        cis = CachedInstanceStatus()
+        cis.start()
+        return cis

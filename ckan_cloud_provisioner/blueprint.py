@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 
-from flask import Blueprint, request, url_for, session
+from flask import Blueprint, request, url_for, session, g
 from flask import redirect, abort
 from flask_jsonpify import jsonpify
 
@@ -22,6 +22,7 @@ def make_blueprint():  # noqa
     """
 
     models.setup_engine(db_connection_string)
+    controllers.init()
 
     # Create instance
     blueprint = Blueprint('ckan_cloud_provisioner', 'ckan_cloud_provisioner')
@@ -36,6 +37,7 @@ def make_blueprint():  # noqa
                 permissions = verifyer.extract_permissions(token)
                 if not (permissions is False):
                     if permissions.get('permissions', {}).get('level', 0) >= level.value:
+                        g.permissions = permissions
                         return jsonpify(func(*args, **kw))
                 abort(403)
             return wrapper
@@ -60,9 +62,13 @@ def make_blueprint():  # noqa
     def delete_instance_(id):
         return controllers.delete_instance(id)
 
+    @check_permission(Permissions.Maintainer)
+    def instance_conn_info_(id):
+        return controllers.instance_connection_info(id)
+
     @check_permission(Permissions.Admin)
     def query_users_():
-        return controllers.query_users()
+        return controllers.query_users(g.permissions.get('userid'))
 
     @check_permission(Permissions.Admin)
     def edit_user_():
@@ -81,6 +87,8 @@ def make_blueprint():  # noqa
         'instance', 'edit_instance', edit_instance_, methods=['POST'])
     blueprint.add_url_rule(
         'instance/<id>', 'delete_instance', delete_instance_, methods=['DELETE'])
+    blueprint.add_url_rule(
+        'instance/conninfo/<id>', 'instance_conn_info', instance_conn_info_, methods=['GET'])
     blueprint.add_url_rule(
         'instance/kinds', 'instance_kinds', instance_kinds_, methods=['GET'])
 
