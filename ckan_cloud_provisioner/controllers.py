@@ -93,6 +93,10 @@ def query_instances():
     instances = []
     for ret in query_results['results']:
         params = {}
+        value = ret['value']
+        for f in ('active', 'status'):
+            if f in value:
+                del value[f]
         params.update(status.get(ret['key'], {}))
         params.update(ret['value'])
         instances.append(
