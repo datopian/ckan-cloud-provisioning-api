@@ -9,7 +9,7 @@ from paramiko import RSAKey
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from queue import Queue, Empty
 
-from .config import instance_manager, default_timeout
+from .config import instance_manager, default_timeout, default_cancel_timeout
 
 private_ssh_key = os.environ['PRIVATE_SSH_KEY']
 
@@ -26,10 +26,10 @@ def cca_cmd(cmd):
 server_executor = ThreadPoolExecutor(max_workers=1)
 task_canceller = ThreadPoolExecutor(max_workers=1)
 
-def cancel(q: Queue):
+def cancel(q: Queue, timeout):
     def func():
         try:
-            q.get(timeout=300)
+            q.get(timeout=timeout)
             logging.error('COMPLETED SUCCESSFULLY!')
         except Empty:
             logging.error('CANCELLING!')
@@ -44,11 +44,11 @@ def combined(q, inner):
         return ret
     return func
 
-def execute_remote(func):
+def execute_remote(func, cancel_timeout=default_cancel_timeout):
     try:
         q = Queue()
         res = server_executor.submit(combined(q, func))
-        task_canceller.submit(cancel(q))
+        task_canceller.submit(cancel(q, cancel_timeout))
         ret = res.result(timeout=default_timeout)
         return ret
     except TimeoutError:

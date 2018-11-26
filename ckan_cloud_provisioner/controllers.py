@@ -81,7 +81,7 @@ def delete_instance(id):
             )
         return func
 
-    ret.update(execute_remote(executor(id)))
+    ret.update(execute_remote(executor(id), cancel_timeout=30))
     return ret
 
 def query_instances():
@@ -157,5 +157,5 @@ def instance_connection_info(id):
                 return {}
         return func
 
-    ret.update(execute_remote(executor(id)))
+    ret.update(execute_remote(executor(id), cancel_timeout=30))
     return ret        
