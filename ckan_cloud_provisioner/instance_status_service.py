@@ -20,6 +20,7 @@ class CachedInstanceStatus(threading.Thread):
                 for k, v in status.items():
                     res = get_connection().run(f'./cca-operator.sh ./get-instance-values.sh "{k}"', hide='both')
                     instance_values = yaml.load(res.stdout)
+                    instance_values.update(v)
                     v.update(instance_values)
                 with self.lock:
                     self.status = status
