@@ -22,8 +22,8 @@ def get_connection():
 
 def cca_cmd(cmd, out_stream=None):
     options = dict(
-        pty=True
-        out_stream=out_stream
+        pty=True,
+        out_stream=out_stream,
     )
     return get_connection().run(f'./cca-operator.sh {cmd}', **options)
 
