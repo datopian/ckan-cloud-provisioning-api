@@ -20,8 +20,12 @@ private_ssh_key = RSAKey.from_private_key(private_ssh_key)
 def get_connection():
     return fabric.Connection(instance_manager, connect_kwargs=dict(pkey=private_ssh_key))
 
-def cca_cmd(cmd):
-    return get_connection().run(f'./cca-operator.sh {cmd}')
+def cca_cmd(cmd, out_stream=None):
+    options = dict(
+        pty=True
+        out_stream=out_stream
+    )
+    return get_connection().run(f'./cca-operator.sh {cmd}', **options)
 
 server_executor = ThreadPoolExecutor(max_workers=1)
 task_canceller = ThreadPoolExecutor(max_workers=1)

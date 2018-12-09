@@ -14,6 +14,8 @@ from .instance_status_service import CachedInstanceStatus
 from .values import convert_body, kinds
 
 cis = None
+LOG_PATH = '/var/log/provisioning/'
+LOG_SUFFIX = '_create.log'
 
 
 def init():
@@ -48,10 +50,11 @@ def create_or_edit_instance(id, body):
             try:
                 conn = get_connection()
                 res = conn.put(values_file_, f'/etc/ckan-cloud/{id_}_values.yaml')
-                if active_:
-                    res = cca_cmd(f'./update-instance.sh "{id_}"')
-                else:
-                    res = cca_cmd(f'./create-instance.sh "{id_}"')
+                with open(f'{LOG_PATH}{id_}{LOG_SUFFIX}', 'w') as out_stream:
+                    if active_:
+                        res = cca_cmd(f'./update-instance.sh "{id_}"', out_stream=out_stream)
+                    else:
+                        res = cca_cmd(f'./create-instance.sh "{id_}"', out_stream=out_stream)
                 return dict(
                     success=res.ok,
                     errors=res.stderr
@@ -152,9 +155,14 @@ def instance_connection_info(id):
                 if 'admin password' in line
             ]
             if len(passwords) > 0:
-                return dict(password=passwords[0])
+                password = passwords[0]
             else:
-                return {}
+                password = '<not-set>'
+            try:
+                log = open(f'{LOG_PATH}{id_}{LOG_SUFFIX}').read().split('\ns')
+            except:
+                log = []
+            return dict(password=password, log=log)
         return func
 
     ret.update(execute_remote(executor(id), cancel_timeout=30))
