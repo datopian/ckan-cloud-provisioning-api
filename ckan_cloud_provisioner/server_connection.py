@@ -28,6 +28,7 @@ def cca_cmd(cmd, out_stream=None):
     return get_connection().run(f'./cca-operator.sh {cmd}', **options)
 
 server_executor = ThreadPoolExecutor(max_workers=1)
+server_ro_executor = ThreadPoolExecutor(max_workers=4)
 task_canceller = ThreadPoolExecutor(max_workers=1)
 
 def cancel(q: Queue, timeout):
@@ -48,10 +49,11 @@ def combined(q, inner):
         return ret
     return func
 
-def execute_remote(func, cancel_timeout=default_cancel_timeout):
+def execute_remote(func, cancel_timeout=default_cancel_timeout, ro_executor=False):
     try:
         q = Queue()
-        res = server_executor.submit(combined(q, func))
+        executor = server_ro_executor if ro_executor else server_executor
+        res = executor.submit(combined(q, func))
         task_canceller.submit(cancel(q, cancel_timeout))
         ret = res.result(timeout=default_timeout)
         return ret

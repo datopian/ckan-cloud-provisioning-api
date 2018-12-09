@@ -165,5 +165,5 @@ def instance_connection_info(id):
             return dict(password=password, log=log)
         return func
 
-    ret.update(execute_remote(executor(id), cancel_timeout=30))
+    ret.update(execute_remote(executor(id), cancel_timeout=30, ro_executor=True))
     return ret        
