@@ -2,6 +2,7 @@ import sys
 from io import StringIO
 import threading
 import pathlib
+import datetime
 
 from fabric import Connection
 import yaml
@@ -50,11 +51,14 @@ def create_or_edit_instance(id, body):
             try:
                 conn = get_connection()
                 res = conn.put(values_file_, f'/etc/ckan-cloud/{id_}_values.yaml')
-                with open(f'{LOG_PATH}{id_}{LOG_SUFFIX}', 'w') as out_stream:
+                with open(f'{LOG_PATH}{id_}{LOG_SUFFIX}', 'a') as out_stream:
+                    out_stream.write('Creation log for %s:\n' % datetime.datetime.now().date().isoformat())
+                    out_stream.write('-----------------------------\n')
                     if active_:
                         res = cca_cmd(f'./update-instance.sh "{id_}"', out_stream=out_stream)
                     else:
                         res = cca_cmd(f'./create-instance.sh "{id_}"', out_stream=out_stream)
+                    out_stream.write('Completed with code %s\n' % res.exited)
                 return dict(
                     success=res.ok,
                     errors=res.stderr
