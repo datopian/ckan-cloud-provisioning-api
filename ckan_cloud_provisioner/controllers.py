@@ -43,7 +43,7 @@ def create_or_edit_instance(id, body):
     values_file.seek(0)
     
     # is active?
-    active = cis.instance_status().get(id) is not None
+    active = cis.instance_status().get(id, {}).get('active') is not None
 
     # Put file and create instance
     def executor(id_, active_, values_file_):
