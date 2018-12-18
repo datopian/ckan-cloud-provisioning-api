@@ -58,8 +58,8 @@ def convert_body(body):
 
     values = {}
     values.update(base_values)
+    values.update(params)
     values.update(kind_values)
     values.update(templated_values)
-    values.update(params)
 
     return values
