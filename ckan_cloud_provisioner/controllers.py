@@ -163,7 +163,7 @@ def instance_connection_info(id):
             else:
                 password = '<not-set>'
             try:
-                log = open(f'{LOG_PATH}{id_}{LOG_SUFFIX}').read().split('\ns')
+                log = open(f'{LOG_PATH}{id_}{LOG_SUFFIX}').read().split('\n')
             except:
                 log = []
             return dict(password=password, log=log)
