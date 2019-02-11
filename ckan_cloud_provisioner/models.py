@@ -98,9 +98,12 @@ def query(kind):
     return ret
 
 
-def query_one(kind, key):
+def query_one(kind, key, case_sensitive=True):
     with session_scope() as session:
-        document = session.query(kind).filter(kind.key==key).first()
+        if case_sensitive:
+            document = session.query(kind).filter(kind.key==key).first()
+        else:
+            document = session.query(kind).filter(kind.key.ilike(key)).first()
         if document is not None:
             return document.value
 

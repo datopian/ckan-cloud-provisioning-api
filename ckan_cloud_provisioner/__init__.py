@@ -13,7 +13,7 @@ def get_permissions(service, userid):
     email = user.get('email')
     if email is None: return {}
     
-    value = query_one(User, email)
+    value = query_one(User, email, case_sensitive=False)
     if value is None: return {}
 
     return value
