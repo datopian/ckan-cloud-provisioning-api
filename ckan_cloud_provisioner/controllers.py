@@ -3,9 +3,11 @@ from io import StringIO
 import threading
 import pathlib
 import datetime
+import time 
 
 from fabric import Connection
 import yaml
+from slugify import slugify
 
 from auth.models import get_user
 
@@ -25,6 +27,14 @@ def init():
 
 
 def create_or_edit_instance(id, body):
+    # Calculate id if necessary
+    if not id:
+        title = body.get('params', {}).get('siteTitle')
+        if title:
+            title = title + ' ' + hex(int(time.time()))[2:]
+            id = slugify(title, separator='-', to_lower=True)
+            body['id'] = id
+
     # Convert values
     try:
         values = convert_body(body)

@@ -4,3 +4,4 @@ flask-cors
 flask-session
 jinja2
 PyYAML
+awesome-slugify

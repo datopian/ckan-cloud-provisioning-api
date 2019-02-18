@@ -55,7 +55,7 @@ def make_blueprint():  # noqa
     @check_permission(Permissions.Maintainer)
     def edit_instance_():
         body = request.json
-        id = body['id']
+        id = body.get('id')
         return controllers.create_or_edit_instance(id, body)
 
     @check_permission(Permissions.Maintainer)
