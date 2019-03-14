@@ -46,6 +46,7 @@ def create_or_edit_instance(id, body):
 
     # Add record to DB
     ret = create_or_edit(Instance, id, values)
+    ret['id'] = id
     
     # Prepare values yaml
     values_file = StringIO()
