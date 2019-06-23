@@ -16,6 +16,10 @@ class CachedInstanceStatus(threading.Thread):
         while True:
             try:
                 status = instance_status()
+                status = dict(
+                    (x['id'], x)
+                    for x in status
+                )
                 with self.lock:
                     self.status = status
                 print(self.status)
