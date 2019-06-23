@@ -13,6 +13,7 @@ from auth.models import get_user
 
 from .models import create_or_edit, delete, query, User, Instance
 from .instance_status_service import CachedInstanceStatus
+from .jenkins_connection import run_jenkins
 from .values import convert_body, kinds
 
 cis = None
@@ -48,7 +49,7 @@ def create_or_edit_instance(id, body):
     ret['id'] = id
         
     # is active?
-    active = cis.instance_status().get(id, {}) is not None
+    ret['active'] = cis.instance_status().get(id, {}) is not None
     # "11fc0a16c05508b19e97de7ccb4451ac50"
     ret['success'], ret['errors'] = run_jenkins(
         "Project Provisioning - new instance",
