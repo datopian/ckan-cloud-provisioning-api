@@ -23,7 +23,9 @@ def run_jenkins(job, **params):
             json=json.dumps(body)
         )
     )
-    return resp
+    return resp.status_code in (
+        requests.codes.ok, requests.codes.created
+    ), resp.text
 
 def instance_status():
     resp = requests.get(
@@ -36,8 +38,6 @@ def instance_status():
 
 if __name__ == '__main__':
     r = run_jenkins('test_test', param1='David', param2='Moshe')
-    print(r.status_code)
-    print(r.content)
-    print(r.headers)
+    print(r)
     r = instance_status()
     print(r)
