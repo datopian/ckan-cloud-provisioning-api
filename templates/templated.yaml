@@ -1,3 +1,3 @@
-domain: cloud-{{id}}.ckan.io
-registerSubdomain: "cloud-{{id}}"
-siteUrl: "https://{{externalAddress or 'cloud-'+id+'.ckan.io'}}"
+domain: ckan-cloud-{{id}}.datagov.us
+registerSubdomain: "ckan-cloud-{{id}}"
+siteUrl: "https://{{externalAddress or 'ckan-cloud-'+id+'.datagov.us'}}"

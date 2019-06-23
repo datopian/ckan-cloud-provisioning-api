@@ -3,7 +3,7 @@ import yaml
 import time
 from fabric import Connection
 
-from .server_connection import get_connection
+from .jenkins_connection import instance_status
 
 class CachedInstanceStatus(threading.Thread):
 
@@ -15,19 +15,13 @@ class CachedInstanceStatus(threading.Thread):
     def run(self):
         while True:
             try:
-                res = get_connection().run(f'./cca-operator.sh ./list-instances.sh', hide='both')
-                status = yaml.load(res.stdout.split('------')[0])
-                for k, v in status.items():
-                    res = get_connection().run(f'./cca-operator.sh ./get-instance-values.sh "{k}"', hide='both')
-                    instance_values = yaml.load(res.stdout)
-                    instance_values.update(v)
-                    v.update(instance_values)
+                status = instance_status()
                 with self.lock:
                     self.status = status
                 print(self.status)
             except Exception as e:
                 print(e)
-            time.sleep(60)
+            time.sleep(10)
 
     def instance_status(self):
         ret = None

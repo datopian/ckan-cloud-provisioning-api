@@ -1,10 +1,7 @@
-from auth.models import get_user
-
-from .blueprint import make_blueprint
-from .models import User, query_one
-
-
 def get_permissions(service, userid):
+    from .models import User, query_one
+    from auth.models import get_user
+
     if service != 'ckan-cloud-provisioner': return {}
     
     user = get_user(userid)

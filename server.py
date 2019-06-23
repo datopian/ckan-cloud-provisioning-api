@@ -9,7 +9,7 @@ os.environ['ALLOWED_SERVICES'] = 'ckan-cloud-provisioner:ckan_cloud_provisioner'
 
 from auth import make_blueprint as auth_blueprint
 
-from ckan_cloud_provisioner import make_blueprint
+from ckan_cloud_provisioner.blueprint import make_blueprint
 
 # Create application
 app = Flask(__name__, static_folder=None)
