@@ -52,7 +52,7 @@ def create_or_edit_instance(id, body):
     ret['active'] = cis.instance_status().get(id, {}) is not None
     # "11fc0a16c05508b19e97de7ccb4451ac50"
     ret['success'], ret['errors'] = run_jenkins(
-        "Project Provisioning - new instance",
+        "Provisioning - new instance",
         VALUES=json.dumps(values, ensure_ascii=True),
         INSTANCE_ID=body['id']
     )
