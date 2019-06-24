@@ -90,8 +90,6 @@ def make_blueprint():  # noqa
         'instance', 'edit_instance', edit_instance_, methods=['POST'])
     blueprint.add_url_rule(
         'instance/<id>', 'delete_instance', delete_instance_, methods=['DELETE'])
-    # blueprint.add_url_rule(
-    #     'instance/conninfo/<id>', 'instance_conn_info', instance_conn_info_, methods=['GET'])
     blueprint.add_url_rule(
         'instance/kinds', 'instance_kinds', instance_kinds_, methods=['GET'])
 

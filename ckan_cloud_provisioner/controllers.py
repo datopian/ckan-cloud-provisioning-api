@@ -50,7 +50,6 @@ def create_or_edit_instance(id, body):
         
     # is active?
     ret['active'] = cis.instance_status().get(id, {}) is not None
-    # "11fc0a16c05508b19e97de7ccb4451ac50"
     ret['success'], ret['errors'] = run_jenkins(
         "Provisioning - new instance",
         VALUES=json.dumps(values, ensure_ascii=True),
@@ -63,17 +62,10 @@ def delete_instance(id):
     # Delete instance from DB
     ret = delete(Instance, id)
 
-    # # Put file and create instance
-    # def executor(id_):
-    #     def func():
-    #         res = cca_cmd(f'./delete-instance.sh "{id_}"')
-    #         return dict(
-    #             success=res.ok,
-    #             errors=res.stderr
-    #         )
-    #     return func
-
-    # ret.update(execute_remote(executor(id), cancel_timeout=30))
+    ret['success'], ret['errors'] = run_jenkins(
+        "Provisioning - delete instance",
+        INSTANCE_ID=id
+    )
     return ret
 
 def query_instances():
@@ -131,27 +123,3 @@ def instance_kinds():
         kinds=kinds()
     )
 
-# def instance_connection_info(id):
-#     ret = {}
-#     # Put file and create instance
-#     def executor(id_):
-#         def func():
-#             res = cca_cmd(f'./instance-connection-info.sh "{id_}"')
-#             passwords = [
-#                 line.strip().split(':')[-1].strip()
-#                 for line in res.stdout.split('\n')
-#                 if 'admin password' in line
-#             ]
-#             if len(passwords) > 0:
-#                 password = passwords[0]
-#             else:
-#                 password = '<not-set>'
-#             try:
-#                 log = open(f'{LOG_PATH}{id_}{LOG_SUFFIX}').read().split('\n')
-#             except:
-#                 log = []
-#             return dict(password=password, log=log)
-#         return func
-
-#     ret.update(execute_remote(executor(id), cancel_timeout=30, ro_executor=True))
-#     return ret        
