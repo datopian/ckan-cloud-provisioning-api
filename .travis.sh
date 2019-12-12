@@ -14,6 +14,15 @@ elif [ "${1}" == "script" ]; then
     ! docker build --cache-from "${DOCKER_IMAGE}:latest" -t "${DOCKER_IMAGE}:latest" . && exit 1
     exit 0
 
+elif [ "${1}" == "test" ]; then
+    docker run --rm -v $PWD/ckan_cloud_provisioner:/target -v $PWD:/results -v $PWD:/src drydockcloud/ci-bandit scan-text
+    scan_status=$?
+    cat bandit.txt
+    if [ $scan_status ]; then
+        exit $scan_status
+    fi
+    exit 0
+    
 elif [ "${1}" == "deploy" ]; then
     TAG="${TRAVIS_TAG:-${TRAVIS_COMMIT}}"
     docker tag "${DOCKER_IMAGE}:latest" "${DOCKER_IMAGE}:${TAG}" &&\

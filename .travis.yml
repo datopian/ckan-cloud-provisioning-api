@@ -22,7 +22,8 @@ install:
 script:
 #   - make test
   - bash .travis.sh script
-
+  - bash .travis.sh test
+  
 #after_success:
 #  - coveralls
 
