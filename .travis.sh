@@ -15,6 +15,13 @@ elif [ "${1}" == "script" ]; then
     exit 0
 
 elif [ "${1}" == "test" ]; then
+    docker run --rm -v $PWD:/target -v $PWD:/results drydockcloud/ci-safety
+    scan_status=$?
+    cat safety.txt
+    if [ $scan_status ]; then
+        exit $scan_status
+    fi
+
     docker run --rm -v $PWD/ckan_cloud_provisioner:/target -v $PWD:/results -v $PWD:/src drydockcloud/ci-bandit scan-text
     scan_status=$?
     cat bandit.txt
