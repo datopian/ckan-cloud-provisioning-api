@@ -15,7 +15,7 @@ def read(*paths):
 # Prepare
 PACKAGE = 'ckan_cloud_provisioner'
 NAME = 'ckan-cloud-provisioner'
-INSTALL_REQUIRES = read('requirements.txt').split('\n')
+INSTALL_REQUIRES = read('requirements.in').split('\n')
 TESTS_REQUIRE = [
     'pylama',
     'tox',
